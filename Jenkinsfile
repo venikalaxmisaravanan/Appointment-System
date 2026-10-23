@@ -1,56 +1,51 @@
+
 pipeline {
-agent any
+    agent any
 
-environment {
-    DOCKER_CLI = 'C:\\Users\\venik\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe'
-    DOCKER_IMAGE = 'venikalaxmi/appointment-system'
-    IMAGE_TAG = 'v1'
-}
+    options {
+        timestamps()
+    }
 
-stages {
-    stage('Verify Project Files') {
-        steps {
-            bat 'if not exist app.py exit /b 1'
-            bat 'if not exist Dockerfile exit /b 1'
-            bat 'if not exist requirements.txt exit /b 1'
+    stages {
+        stage('Verify Version 2 Branch') {
+            steps {
+                echo 'Verifying Appointment System Version 2.'
 
-            echo 'Project files verified successfully.'
+                bat 'git branch --show-current'
+
+                bat 'git log -1 --oneline'
+            }
+        }
+
+        stage('Verify Project Files') {
+            steps {
+                bat 'if not exist app.py exit /b 1'
+                bat 'if not exist templates\\index.html exit /b 1'
+                bat 'if not exist static\\style.css exit /b 1'
+                bat 'if not exist requirements.txt exit /b 1'
+                bat 'if not exist Dockerfile exit /b 1'
+
+                echo 'All required application files are present.'
+            }
+        }
+
+        stage('Check Python Syntax') {
+            steps {
+                bat 'python --version'
+                bat 'python -m py_compile app.py'
+
+                echo 'Python syntax verification completed successfully.'
+            }
         }
     }
 
-    stage('Check Docker') {
-        steps {
-            bat '"%DOCKER_CLI%" version'
+    post {
+        success {
+            echo 'SUCCESS: Appointment System Version 2 verification completed.'
+        }
+
+        failure {
+            echo 'FAILURE: Check the Jenkins console output for details.'
         }
     }
-
-    stage('Build Docker Image') {
-        steps {
-            bat '"%DOCKER_CLI%" build -t %DOCKER_IMAGE%:%IMAGE_TAG% .'
-
-            echo 'Appointment System Docker image built successfully.'
-        }
-    }
-
-    stage('Verify Docker Image') {
-        steps {
-            bat '"%DOCKER_CLI%" image inspect %DOCKER_IMAGE%:%IMAGE_TAG%'
-
-            echo 'Docker image verification completed successfully.'
-        }
-    }
-}
-
-post {
-    success {
-        echo 'SUCCESS: Appointment System Version 1 pipeline completed successfully.'
-        echo 'The Docker image is available locally.'
-        echo 'DockerHub publishing is temporarily skipped.'
-    }
-
-    failure {
-        echo 'Pipeline failed. Check Console Output for the error.'
-    }
-}
-
 }
