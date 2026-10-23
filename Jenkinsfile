@@ -2,9 +2,9 @@ pipeline {
 agent any
 
 environment {
+    DOCKER_CLI = 'C:\\Users\\venik\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe'
     DOCKER_IMAGE = 'venikalaxmi/appointment-system'
     IMAGE_TAG = 'v1'
-    DOCKER_CLI = 'C:\\Users\\venik\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe'
 }
 
 stages {
@@ -13,6 +13,7 @@ stages {
             bat 'if not exist app.py exit /b 1'
             bat 'if not exist Dockerfile exit /b 1'
             bat 'if not exist requirements.txt exit /b 1'
+
             echo 'Project files verified successfully.'
         }
     }
@@ -29,7 +30,7 @@ stages {
         }
     }
 
-    stage('Login to DockerHub and Push') {
+    stage('Diagnose DockerHub Login') {
         steps {
             withCredentials([
                 usernamePassword(
@@ -39,11 +40,27 @@ stages {
                 )
             ]) {
                 powershell '''
-                    $env:DOCKERHUB_TOKEN | & $env:DOCKER_CLI login -u $env:DOCKERHUB_USER --password-stdin
-                    if ($LASTEXITCODE -ne 0) { exit 1 }
+                    if ([string]::IsNullOrWhiteSpace($env:DOCKERHUB_USER)) {
+                        Write-Output "DIAGNOSTIC: DockerHub username is empty."
+                        exit 1
+                    }
 
-                    & $env:DOCKER_CLI push "$env:DOCKER_IMAGE`:$env:IMAGE_TAG"
-                    if ($LASTEXITCODE -ne 0) { exit 1 }
+                    if ([string]::IsNullOrWhiteSpace($env:DOCKERHUB_TOKEN)) {
+                        Write-Output "DIAGNOSTIC: DockerHub token is empty."
+                        exit 1
+                    }
+
+                    Write-Output "DIAGNOSTIC: DockerHub username is $env:DOCKERHUB_USER"
+                    Write-Output "DIAGNOSTIC: DockerHub token is present (length: $($env:DOCKERHUB_TOKEN.Length))."
+
+                    $env:DOCKERHUB_TOKEN | & $env:DOCKER_CLI login -u $env:DOCKERHUB_USER --password-stdin
+
+                    if ($LASTEXITCODE -ne 0) {
+                        Write-Output "DIAGNOSTIC: DockerHub login failed."
+                        exit 1
+                    }
+
+                    Write-Output "DIAGNOSTIC: DockerHub login succeeded."
 
                     & $env:DOCKER_CLI logout
                 '''
@@ -54,13 +71,12 @@ stages {
 
 post {
     success {
-        echo 'Appointment System v1 image built and pushed successfully.'
+        echo 'DockerHub authentication diagnostic completed successfully.'
     }
+
     failure {
-        echo 'Pipeline failed. Check Console Output for the error.'
+        echo 'Diagnostic failed. Check Console Output for details.'
     }
 }
+
 }
-
-
-
