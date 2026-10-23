@@ -27,55 +27,29 @@ stages {
     stage('Build Docker Image') {
         steps {
             bat '"%DOCKER_CLI%" build -t %DOCKER_IMAGE%:%IMAGE_TAG% .'
+
+            echo 'Appointment System Docker image built successfully.'
         }
     }
 
-    stage('Diagnose DockerHub Login') {
+    stage('Verify Docker Image') {
         steps {
-            withCredentials([
-                usernamePassword(
-                    credentialsId: 'dockerhub-credentials',
-                    usernameVariable: 'DOCKERHUB_USER',
-                    passwordVariable: 'DOCKERHUB_TOKEN'
-                )
-            ]) {
-                powershell '''
-                    if ([string]::IsNullOrWhiteSpace($env:DOCKERHUB_USER)) {
-                        Write-Output "DIAGNOSTIC: DockerHub username is empty."
-                        exit 1
-                    }
+            bat '"%DOCKER_CLI%" image inspect %DOCKER_IMAGE%:%IMAGE_TAG%'
 
-                    if ([string]::IsNullOrWhiteSpace($env:DOCKERHUB_TOKEN)) {
-                        Write-Output "DIAGNOSTIC: DockerHub token is empty."
-                        exit 1
-                    }
-
-                    Write-Output "DIAGNOSTIC: DockerHub username is $env:DOCKERHUB_USER"
-                    Write-Output "DIAGNOSTIC: DockerHub token is present (length: $($env:DOCKERHUB_TOKEN.Length))."
-
-                    $env:DOCKERHUB_TOKEN | & $env:DOCKER_CLI login -u $env:DOCKERHUB_USER --password-stdin
-
-                    if ($LASTEXITCODE -ne 0) {
-                        Write-Output "DIAGNOSTIC: DockerHub login failed."
-                        exit 1
-                    }
-
-                    Write-Output "DIAGNOSTIC: DockerHub login succeeded."
-
-                    & $env:DOCKER_CLI logout
-                '''
-            }
+            echo 'Docker image verification completed successfully.'
         }
     }
 }
 
 post {
     success {
-        echo 'DockerHub authentication diagnostic completed successfully.'
+        echo 'SUCCESS: Appointment System Version 1 pipeline completed successfully.'
+        echo 'The Docker image is available locally.'
+        echo 'DockerHub publishing is temporarily skipped.'
     }
 
     failure {
-        echo 'Diagnostic failed. Check Console Output for details.'
+        echo 'Pipeline failed. Check Console Output for the error.'
     }
 }
 
