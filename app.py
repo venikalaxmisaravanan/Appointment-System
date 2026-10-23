@@ -1,3 +1,4 @@
+
 import os
 import sqlite3
 from datetime import date, datetime
@@ -109,15 +110,17 @@ def home():
                         patient_name,
                         appointment_date,
                         appointment_time,
-                        reason
+                        reason,
+                        created_at
                     )
-                    VALUES (?, ?, ?, ?)
+                    VALUES (?, ?, ?, ?, ?)
                     """,
                     (
                         patient_name,
                         appointment_date,
                         appointment_time,
                         reason,
+                        datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                     ),
                 )
 
@@ -183,3 +186,4 @@ if __name__ == "__main__":
         port=5000,
         debug=False,
     )
+
