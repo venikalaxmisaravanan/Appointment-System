@@ -1,3 +1,4 @@
+
 import os
 import sqlite3
 from datetime import date, datetime
@@ -59,14 +60,18 @@ def home():
                 "index.html",
                 error="Please complete all the fields.",
                 today=date.today().isoformat(),
+                appointments=get_appointments(),
             ), 400
 
         if len(patient_name) > 100 or len(reason) > 500:
             return render_template(
                 "index.html",
-                error="Name must be at most 100 characters "
-                      "and reason at most 500 characters.",
+                error=(
+                    "Name must be at most 100 characters "
+                    "and reason at most 500 characters."
+                ),
                 today=date.today().isoformat(),
+                appointments=get_appointments(),
             ), 400
 
         # Validate date and time formats.
@@ -78,6 +83,7 @@ def home():
                 "index.html",
                 error="Please enter a valid appointment date and time.",
                 today=date.today().isoformat(),
+                appointments=get_appointments(),
             ), 400
 
         # Prevent appointments in the past.
@@ -86,6 +92,7 @@ def home():
                 "index.html",
                 error="Appointment date cannot be in the past.",
                 today=date.today().isoformat(),
+                appointments=get_appointments(),
             ), 400
 
         # Store the appointment in SQLite.
@@ -118,7 +125,27 @@ def home():
         "index.html",
         booked=booked,
         today=date.today().isoformat(),
+        appointments=get_appointments(),
     )
+
+
+def get_appointments():
+    """Retrieve saved appointments, ordered by date and time."""
+    with get_db_connection() as connection:
+        appointments = connection.execute(
+            """
+            SELECT
+                id,
+                patient_name,
+                appointment_date,
+                appointment_time,
+                reason
+            FROM appointments
+            ORDER BY appointment_date ASC, appointment_time ASC, id ASC
+            """
+        ).fetchall()
+
+    return appointments
 
 
 @app.route("/health")
