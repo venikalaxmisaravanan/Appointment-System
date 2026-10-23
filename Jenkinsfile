@@ -1,7 +1,6 @@
 pipeline {
 agent any
 
-```
 environment {
     DOCKER_IMAGE = 'venikalaxmi/appointment-system'
     IMAGE_TAG = 'v1'
