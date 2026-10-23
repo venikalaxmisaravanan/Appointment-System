@@ -42,6 +42,25 @@ def initialize_database():
         )
 
 
+def get_appointments():
+    """Retrieve saved appointments, ordered by date and time."""
+    with get_db_connection() as connection:
+        appointments = connection.execute(
+            """
+            SELECT
+                id,
+                patient_name,
+                appointment_date,
+                appointment_time,
+                reason
+            FROM appointments
+            ORDER BY appointment_date ASC, appointment_time ASC, id ASC
+            """
+        ).fetchall()
+
+    return appointments
+
+
 @app.route("/", methods=["GET", "POST"])
 def home():
     """Display the booking form and process new appointments."""
@@ -120,32 +139,33 @@ def home():
         return redirect(url_for("home", booked="1"))
 
     booked = request.args.get("booked") == "1"
+    cancelled = request.args.get("cancelled") == "1"
 
     return render_template(
         "index.html",
         booked=booked,
+        cancelled=cancelled,
         today=date.today().isoformat(),
         appointments=get_appointments(),
     )
 
 
-def get_appointments():
-    """Retrieve saved appointments, ordered by date and time."""
-    with get_db_connection() as connection:
-        appointments = connection.execute(
-            """
-            SELECT
-                id,
-                patient_name,
-                appointment_date,
-                appointment_time,
-                reason
-            FROM appointments
-            ORDER BY appointment_date ASC, appointment_time ASC, id ASC
-            """
-        ).fetchall()
+@app.route("/cancel/<int:appointment_id>", methods=["POST"])
+def cancel_appointment(appointment_id):
+    """Cancel an existing appointment using its unique ID."""
 
-    return appointments
+    with get_db_connection() as connection:
+        cursor = connection.execute(
+            "DELETE FROM appointments WHERE id = ?",
+            (appointment_id,),
+        )
+
+        appointment_found = cursor.rowcount > 0
+
+    if appointment_found:
+        return redirect(url_for("home", cancelled="1"))
+
+    return redirect(url_for("home", not_found="1"))
 
 
 @app.route("/health")

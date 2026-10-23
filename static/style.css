@@ -1,3 +1,4 @@
+
 * {
     box-sizing: border-box;
 }
@@ -16,7 +17,7 @@ body {
 }
 
 .header-content {
-    max-width: 900px;
+    max-width: 1100px;
     margin: auto;
 }
 
@@ -41,18 +42,22 @@ body {
 }
 
 .container {
-    max-width: 900px;
+    max-width: 1100px;
     margin: 35px auto;
     padding: 0 20px;
 }
 
 .card {
     max-width: 600px;
-    margin: auto;
+    margin: 0 auto 30px;
     padding: 30px;
     background: white;
     border-radius: 12px;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+}
+
+.appointments-card {
+    max-width: 100%;
 }
 
 .card h2 {
@@ -63,6 +68,7 @@ body {
 .description {
     color: #687386;
     margin-bottom: 25px;
+    line-height: 1.5;
 }
 
 .form-group {
@@ -112,9 +118,24 @@ textarea {
     background: #103654;
 }
 
+.cancel-button {
+    padding: 9px 13px;
+    border: none;
+    border-radius: 5px;
+    background: #b42318;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.cancel-button:hover {
+    background: #8f1c13;
+}
+
 .message {
     padding: 14px;
-    margin-bottom: 20px;
+    margin: 15px 0 20px;
     border-radius: 6px;
     line-height: 1.5;
 }
@@ -129,23 +150,6 @@ textarea {
     background: #fff0f0;
     color: #a12626;
     border: 1px solid #efb5b5;
-}
-
-.footer-note {
-    margin-top: 25px;
-    text-align: center;
-    color: #687386;
-    font-size: 13px;
-}
-
-@media (max-width: 600px) {
-    .header h1 {
-        font-size: 26px;
-    }
-
-    .card {
-        padding: 22px;
-    }
 }
 
 .table-container {
@@ -170,13 +174,36 @@ td {
 
 th {
     font-weight: bold;
+    background: #f2f5f9;
 }
 
 td {
     overflow-wrap: anywhere;
 }
 
-.message {
-    margin-top: 15px;
+td form {
+    margin: 0;
+}
+
+.footer-note {
+    margin-top: 25px;
+    text-align: center;
+    color: #687386;
+    font-size: 13px;
+}
+
+@media (max-width: 600px) {
+    .header h1 {
+        font-size: 26px;
+    }
+
+    .card {
+        padding: 22px;
+    }
+
+    th,
+    td {
+        padding: 9px;
+    }
 }
 
