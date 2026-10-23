@@ -1,209 +1,221 @@
-
 * {
     box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 body {
-    margin: 0;
     font-family: Arial, Helvetica, sans-serif;
-    background: #f2f5f9;
-    color: #253047;
+    background: #f3f6fb;
+    color: #263238;
+    line-height: 1.6;
 }
 
 .header {
-    background: #174a75;
-    color: white;
+    background: #173b65;
+    color: #ffffff;
     padding: 35px 20px;
+    text-align: center;
 }
 
-.header-content {
-    max-width: 1100px;
-    margin: auto;
-}
-
-.header h1 {
-    margin: 0 0 10px;
+.header-content h1 {
     font-size: 32px;
+    margin-bottom: 8px;
 }
 
-.header p {
-    margin: 0 0 18px;
-    color: #e4edf6;
+.header-content p {
+    font-size: 16px;
+    margin-bottom: 12px;
 }
 
 .version {
     display: inline-block;
-    padding: 7px 12px;
-    background: #ffffff;
-    color: #174a75;
+    background: #e0ecff;
+    color: #173b65;
+    padding: 6px 14px;
     border-radius: 20px;
     font-size: 13px;
     font-weight: bold;
 }
 
 .container {
+    width: 92%;
     max-width: 1100px;
-    margin: 35px auto;
-    padding: 0 20px;
+    margin: 30px auto;
 }
 
 .card {
-    max-width: 600px;
-    margin: 0 auto 30px;
-    padding: 30px;
-    background: white;
+    background: #ffffff;
+    padding: 28px;
+    margin-bottom: 28px;
     border-radius: 12px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-}
-
-.appointments-card {
-    max-width: 100%;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
 }
 
 .card h2 {
-    margin-top: 0;
-    color: #174a75;
+    color: #173b65;
+    margin-bottom: 8px;
+    font-size: 23px;
 }
 
 .description {
-    color: #687386;
-    margin-bottom: 25px;
-    line-height: 1.5;
+    color: #667085;
+    margin-bottom: 22px;
+    font-size: 14px;
 }
 
 .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 18px;
 }
 
-label {
+.form-group label {
     display: block;
-    margin-bottom: 8px;
     font-weight: bold;
+    margin-bottom: 7px;
+    color: #344054;
 }
 
-input,
-textarea {
-    display: block;
+.form-group input,
+.form-group textarea {
     width: 100%;
     padding: 12px;
-    border: 1px solid #ccd4df;
-    border-radius: 6px;
-    font: inherit;
-    background: #fff;
+    border: 1px solid #cbd5e1;
+    border-radius: 7px;
+    font-family: inherit;
+    font-size: 15px;
+    background: #ffffff;
 }
 
-input:focus,
-textarea:focus {
-    outline: 2px solid #7bb5e3;
-    border-color: #174a75;
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #2864a5;
+    box-shadow: 0 0 0 3px rgba(40, 100, 165, 0.12);
 }
 
-textarea {
+.form-group textarea {
     resize: vertical;
 }
 
 .book-button {
-    width: 100%;
-    padding: 14px;
+    display: inline-block;
+    background: #1d5e9e;
+    color: #ffffff;
+    padding: 12px 20px;
     border: none;
-    border-radius: 6px;
-    background: #174a75;
-    color: white;
-    font-size: 16px;
+    border-radius: 7px;
+    font-size: 15px;
     font-weight: bold;
     cursor: pointer;
 }
 
 .book-button:hover {
-    background: #103654;
-}
-
-.cancel-button {
-    padding: 9px 13px;
-    border: none;
-    border-radius: 5px;
-    background: #b42318;
-    color: white;
-    font-size: 14px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.cancel-button:hover {
-    background: #8f1c13;
+    background: #154777;
 }
 
 .message {
-    padding: 14px;
-    margin: 15px 0 20px;
-    border-radius: 6px;
-    line-height: 1.5;
+    background: #f1f5f9;
+    color: #475569;
+    padding: 13px 15px;
+    border-radius: 7px;
+    margin-bottom: 18px;
+    font-size: 14px;
 }
 
-.success {
-    background: #e2f6e9;
-    color: #176534;
-    border: 1px solid #a8dfb8;
+.message.success {
+    background: #dcfce7;
+    color: #166534;
+    border: 1px solid #bbf7d0;
 }
 
-.error {
-    background: #fff0f0;
-    color: #a12626;
-    border: 1px solid #efb5b5;
+.message.error {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+}
+
+.appointments-card {
+    overflow: hidden;
 }
 
 .table-container {
     width: 100%;
     overflow-x: auto;
-    margin-top: 20px;
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
-    background: white;
+    margin-top: 10px;
+}
+
+thead {
+    background: #173b65;
+    color: #ffffff;
 }
 
 th,
 td {
-    padding: 12px;
+    padding: 13px 12px;
     text-align: left;
-    border-bottom: 1px solid #ddd;
-    vertical-align: top;
+    border-bottom: 1px solid #e2e8f0;
+    font-size: 14px;
+    vertical-align: middle;
 }
 
 th {
     font-weight: bold;
-    background: #f2f5f9;
+    white-space: nowrap;
 }
 
-td {
-    overflow-wrap: anywhere;
+tbody tr:hover {
+    background: #f8fafc;
 }
 
-td form {
-    margin: 0;
+.cancel-button {
+    background: #dc3545;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    padding: 9px 13px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.cancel-button:hover {
+    background: #b02a37;
 }
 
 .footer-note {
-    margin-top: 25px;
     text-align: center;
-    color: #687386;
+    color: #667085;
     font-size: 13px;
+    padding: 10px 0 25px;
 }
 
-@media (max-width: 600px) {
-    .header h1 {
+@media (max-width: 768px) {
+    .header-content h1 {
         font-size: 26px;
     }
 
+    .container {
+        width: 95%;
+        margin: 20px auto;
+    }
+
     .card {
-        padding: 22px;
+        padding: 18px;
+    }
+
+    .card h2 {
+        font-size: 20px;
     }
 
     th,
     td {
-        padding: 9px;
+        padding: 10px;
+        font-size: 12px;
     }
 }
-

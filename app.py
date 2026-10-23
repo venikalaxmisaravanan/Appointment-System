@@ -1,4 +1,3 @@
-
 import os
 import sqlite3
 from datetime import date, datetime
@@ -9,24 +8,25 @@ from flask import Flask, redirect, render_template, request, url_for
 
 app = Flask(__name__)
 
-# Use a persistent data directory in Docker.
-# When running locally, use the instance directory.
 DATABASE_PATH = Path(
     os.environ.get("DATABASE_PATH", "instance/appointments.db")
 )
 
-DATABASE_PATH.parent.mkdir(parents=True, exist_ok=True)
-
 
 def get_db_connection():
     """Create a connection to the SQLite database."""
+
+    DATABASE_PATH.parent.mkdir(parents=True, exist_ok=True)
+
     connection = sqlite3.connect(DATABASE_PATH)
     connection.row_factory = sqlite3.Row
+
     return connection
 
 
 def initialize_database():
-    """Create the appointments table if it does not exist."""
+    """Create the appointments table if it does not already exist."""
+
     with get_db_connection() as connection:
         connection.execute(
             """
@@ -36,14 +36,94 @@ def initialize_database():
                 appointment_date TEXT NOT NULL,
                 appointment_time TEXT NOT NULL,
                 reason TEXT NOT NULL,
-                created_at TEXT NOT NULL
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
             """
         )
 
 
-def get_appointments():
-    """Retrieve saved appointments, ordered by date and time."""
+@app.route("/", methods=["GET", "POST"])
+def home():
+    """Display appointments and handle new appointment bookings."""
+
+    error = None
+
+    if request.method == "POST":
+        patient_name = request.form.get(
+            "patient_name", ""
+        ).strip()
+
+        appointment_date = request.form.get(
+            "appointment_date", ""
+        ).strip()
+
+        appointment_time = request.form.get(
+            "appointment_time", ""
+        ).strip()
+
+        reason = request.form.get(
+            "reason", ""
+        ).strip()
+
+        # Validate required fields.
+        if not all(
+            [
+                patient_name,
+                appointment_date,
+                appointment_time,
+                reason,
+            ]
+        ):
+            error = "Please fill in all the fields."
+
+        elif len(patient_name) > 100:
+            error = "Patient name must not exceed 100 characters."
+
+        elif len(reason) > 500:
+            error = "Reason must not exceed 500 characters."
+
+        else:
+            try:
+                selected_date = date.fromisoformat(
+                    appointment_date
+                )
+
+                datetime.strptime(
+                    appointment_time, "%H:%M"
+                )
+
+                if selected_date < date.today():
+                    error = "Appointment date cannot be in the past."
+
+            except ValueError:
+                error = (
+                    "Please enter a valid appointment date and time."
+                )
+
+        # Save the appointment when validation succeeds.
+        if error is None:
+            with get_db_connection() as connection:
+                connection.execute(
+                    """
+                    INSERT INTO appointments (
+                        patient_name,
+                        appointment_date,
+                        appointment_time,
+                        reason
+                    )
+                    VALUES (?, ?, ?, ?)
+                    """,
+                    (
+                        patient_name,
+                        appointment_date,
+                        appointment_time,
+                        reason,
+                    ),
+                )
+
+            return redirect(url_for("home", booked="1"))
+
+    # Retrieve appointments for the table.
     with get_db_connection() as connection:
         appointments = connection.execute(
             """
@@ -52,101 +132,20 @@ def get_appointments():
                 patient_name,
                 appointment_date,
                 appointment_time,
-                reason
+                reason,
+                created_at
             FROM appointments
-            ORDER BY appointment_date ASC, appointment_time ASC, id ASC
+            ORDER BY appointment_date, appointment_time, id
             """
         ).fetchall()
 
-    return appointments
-
-
-@app.route("/", methods=["GET", "POST"])
-def home():
-    """Display the booking form and process new appointments."""
-
-    if request.method == "POST":
-        patient_name = request.form.get("patient_name", "").strip()
-        appointment_date = request.form.get("appointment_date", "").strip()
-        appointment_time = request.form.get("appointment_time", "").strip()
-        reason = request.form.get("reason", "").strip()
-
-        # Validate required fields.
-        if not all(
-            [patient_name, appointment_date, appointment_time, reason]
-        ):
-            return render_template(
-                "index.html",
-                error="Please complete all the fields.",
-                today=date.today().isoformat(),
-                appointments=get_appointments(),
-            ), 400
-
-        if len(patient_name) > 100 or len(reason) > 500:
-            return render_template(
-                "index.html",
-                error=(
-                    "Name must be at most 100 characters "
-                    "and reason at most 500 characters."
-                ),
-                today=date.today().isoformat(),
-                appointments=get_appointments(),
-            ), 400
-
-        # Validate date and time formats.
-        try:
-            selected_date = date.fromisoformat(appointment_date)
-            datetime.strptime(appointment_time, "%H:%M")
-        except ValueError:
-            return render_template(
-                "index.html",
-                error="Please enter a valid appointment date and time.",
-                today=date.today().isoformat(),
-                appointments=get_appointments(),
-            ), 400
-
-        # Prevent appointments in the past.
-        if selected_date < date.today():
-            return render_template(
-                "index.html",
-                error="Appointment date cannot be in the past.",
-                today=date.today().isoformat(),
-                appointments=get_appointments(),
-            ), 400
-
-        # Store the appointment in SQLite.
-        with get_db_connection() as connection:
-            connection.execute(
-                """
-                INSERT INTO appointments (
-                    patient_name,
-                    appointment_date,
-                    appointment_time,
-                    reason,
-                    created_at
-                )
-                VALUES (?, ?, ?, ?, ?)
-                """,
-                (
-                    patient_name,
-                    appointment_date,
-                    appointment_time,
-                    reason,
-                    datetime.now().isoformat(timespec="seconds"),
-                ),
-            )
-
-        return redirect(url_for("home", booked="1"))
-
-    booked = request.args.get("booked") == "1"
-    cancelled = request.args.get("cancelled") == "1"
-
     return render_template(
         "index.html",
-        booked=booked,
-        cancelled=cancelled,
+        appointments=appointments,
         today=date.today().isoformat(),
-        appointments=get_appointments(),
+        booked=request.args.get("booked") == "1",
+        cancelled=request.args.get("cancelled") == "1",
+        error=error,
     )
 
 
@@ -171,6 +170,7 @@ def cancel_appointment(appointment_id):
 @app.route("/health")
 def health():
     """Health endpoint for Docker and Kubernetes checks."""
+
     return {"status": "healthy"}, 200
 
 
@@ -178,4 +178,8 @@ initialize_database()
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=False)
+    app.run(
+        host="0.0.0.0",
+        port=5000,
+        debug=False,
+    )

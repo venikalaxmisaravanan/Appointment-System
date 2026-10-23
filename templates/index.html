@@ -1,11 +1,10 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Appointment System | v3</title>
+    <title>Appointment System | Version 3</title>
 
     <link
         rel="stylesheet"
@@ -18,7 +17,9 @@
     <header class="header">
         <div class="header-content">
             <h1>Appointment System</h1>
+
             <p>Book, view, and cancel your appointments.</p>
+
             <span class="version">
                 Version 3.0 — Cancel Appointments
             </span>
@@ -27,6 +28,7 @@
 
     <main class="container">
 
+        <!-- Booking section -->
         <section class="card">
             <h2>Book an Appointment</h2>
 
@@ -77,7 +79,9 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="appointment_date">Appointment Date</label>
+                    <label for="appointment_date">
+                        Appointment Date
+                    </label>
 
                     <input
                         type="date"
@@ -89,7 +93,9 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="appointment_time">Appointment Time</label>
+                    <label for="appointment_time">
+                        Appointment Time
+                    </label>
 
                     <input
                         type="time"
@@ -100,7 +106,9 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="reason">Reason for Appointment</label>
+                    <label for="reason">
+                        Reason for Appointment
+                    </label>
 
                     <textarea
                         id="reason"
@@ -119,7 +127,9 @@
             </form>
         </section>
 
+        <!-- Appointments section -->
         <section class="card appointments-card">
+
             <h2>View Appointments</h2>
 
             <p class="description">
@@ -128,7 +138,9 @@
             </p>
 
             {% if appointments %}
+
                 <div class="table-container">
+
                     <table>
                         <thead>
                             <tr>
@@ -143,12 +155,28 @@
 
                         <tbody>
                             {% for appointment in appointments %}
+
                                 <tr>
-                                    <td>{{ appointment["id"] }}</td>
-                                    <td>{{ appointment["patient_name"] }}</td>
-                                    <td>{{ appointment["appointment_date"] }}</td>
-                                    <td>{{ appointment["appointment_time"] }}</td>
-                                    <td>{{ appointment["reason"] }}</td>
+                                    <td>
+                                        {{ appointment["id"] }}
+                                    </td>
+
+                                    <td>
+                                        {{ appointment["patient_name"] }}
+                                    </td>
+
+                                    <td>
+                                        {{ appointment["appointment_date"] }}
+                                    </td>
+
+                                    <td>
+                                        {{ appointment["appointment_time"] }}
+                                    </td>
+
+                                    <td>
+                                        {{ appointment["reason"] }}
+                                    </td>
+
                                     <td>
                                         <form
                                             method="POST"
@@ -169,15 +197,21 @@
                                         </form>
                                     </td>
                                 </tr>
+
                             {% endfor %}
                         </tbody>
                     </table>
+
                 </div>
+
             {% else %}
+
                 <div class="message">
                     No appointments have been booked yet.
                 </div>
+
             {% endif %}
+
         </section>
 
         <p class="footer-note">
@@ -188,4 +222,3 @@
 
 </body>
 </html>
-
