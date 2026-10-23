@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Appointment System | v1</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+</head>
+
+<body>
+
+    <header class="header">
+        <div class="header-content">
+            <h1>Appointment System</h1>
+            <p>Book your appointment quickly and easily.</p>
+            <span class="version">Version 1.0 — Booking</span>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <section class="card">
+            <h2>Book an Appointment</h2>
+
+            <p class="description">
+                Enter your details to schedule an appointment.
+            </p>
+
+            {% if booked %}
+                <div class="message success" role="status">
+                    Your appointment has been booked successfully!
+                </div>
+            {% endif %}
+
+            {% if error %}
+                <div class="message error" role="alert">
+                    {{ error }}
+                </div>
+            {% endif %}
+
+            <form method="POST" action="{{ url_for('home') }}">
+
+                <div class="form-group">
+                    <label for="patient_name">Patient Name</label>
+
+                    <input
+                        type="text"
+                        id="patient_name"
+                        name="patient_name"
+                        maxlength="100"
+                        placeholder="Enter patient name"
+                        autocomplete="name"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="appointment_date">Appointment Date</label>
+
+                    <input
+                        type="date"
+                        id="appointment_date"
+                        name="appointment_date"
+                        min="{{ today }}"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="appointment_time">Appointment Time</label>
+
+                    <input
+                        type="time"
+                        id="appointment_time"
+                        name="appointment_time"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="reason">Reason for Appointment</label>
+
+                    <textarea
+                        id="reason"
+                        name="reason"
+                        rows="4"
+                        maxlength="500"
+                        placeholder="Enter the reason for your appointment"
+                        required
+                    ></textarea>
+                </div>
+
+                <button type="submit" class="book-button">
+                    Book Appointment
+                </button>
+
+            </form>
+        </section>
+
+        <p class="footer-note">
+            Appointment System — Academic Project | Roll No: 24MIS0117
+        </p>
+
+    </main>
+
+</body>
+</html>
