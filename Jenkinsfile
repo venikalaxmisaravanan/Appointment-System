@@ -1,75 +1,75 @@
-
 pipeline {
     agent any
 
-    options {
-        timestamps()
-    }
-
     environment {
-        DOCKER_CLI = 'C:\\Users\\venik\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe'
-        DOCKER_IMAGE = 'venikalaxmi/appointment-system'
-        IMAGE_TAG = 'v2'
+        DOCKER_EXE = 'C:\\Users\\venik\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe'
+        IMAGE_NAME = 'venikalaxmi/appointment-system:v3'
     }
 
     stages {
         stage('Verify Project Files') {
             steps {
-                echo 'Verifying Appointment System Version 2 project files.'
+                echo 'Checking Appointment System Version 3 project files...'
+
+                bat 'dir'
 
                 bat 'if not exist app.py exit /b 1'
-                bat 'if not exist templates\\index.html exit /b 1'
-                bat 'if not exist static\\style.css exit /b 1'
                 bat 'if not exist requirements.txt exit /b 1'
                 bat 'if not exist Dockerfile exit /b 1'
-
-                echo 'All required application files are present.'
+                bat 'if not exist templates\\index.html exit /b 1'
+                bat 'if not exist static\\style.css exit /b 1'
             }
         }
 
         stage('Check Docker') {
             steps {
-                bat '"%DOCKER_CLI%" --version'
-                bat '"%DOCKER_CLI%" info'
+                echo 'Checking Docker availability...'
 
-                echo 'Docker is available.'
+                bat '"%DOCKER_EXE%" --version'
+                bat '"%DOCKER_EXE%" info'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                bat '"%DOCKER_CLI%" build -t %DOCKER_IMAGE%:%IMAGE_TAG% .'
+                echo 'Building Appointment System Version 3 Docker image...'
 
-                echo 'Version 2 Docker image build completed.'
+                bat '"%DOCKER_EXE%" build -t %IMAGE_NAME% .'
             }
         }
 
         stage('Verify Docker Image') {
             steps {
-                bat '"%DOCKER_CLI%" image inspect %DOCKER_IMAGE%:%IMAGE_TAG%'
+                echo 'Verifying the Version 3 Docker image...'
 
-                echo 'Version 2 Docker image is available locally.'
+                bat '"%DOCKER_EXE%" image inspect %IMAGE_NAME%'
+
+                bat '"%DOCKER_EXE%" images venikalaxmi/appointment-system'
             }
         }
 
         stage('Publish to Docker Hub') {
             steps {
                 echo 'Docker Hub publishing is temporarily skipped.'
-                echo 'The image can be published manually through Docker Desktop.'
+                echo 'The Version 3 image will be published separately after Jenkins verification.'
             }
         }
     }
 
     post {
         success {
-            echo 'SUCCESS: Appointment System Version 2 pipeline completed successfully.'
-            echo 'The Version 2 Docker image is available locally.'
+            echo 'SUCCESS: Appointment System Version 3 pipeline completed successfully.'
+            echo 'The Version 3 Docker image is available locally.'
             echo 'Docker Hub publishing is temporarily skipped.'
         }
 
         failure {
-            echo 'FAILURE: Check the Jenkins Console Output for details.'
+            echo 'FAILED: Appointment System Version 3 pipeline encountered an error.'
+            echo 'Check the Jenkins Console Output for details.'
+        }
+
+        always {
+            echo 'Version 3 Jenkins pipeline execution finished.'
         }
     }
 }
-
